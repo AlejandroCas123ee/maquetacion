@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Niveles de Especificidad CSS</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            background-color: #0b2a4a;
+            color: #fff;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+        }
+
+        .nav-bar {
+            background-color: #0e3d6b;
+            padding: 16px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid rgba(255, 255, 255, .1);
+        }
+
+        .btn-nav {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, .1);
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, .3);
+            border-radius: 8px;
+            padding: 6px 14px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all .25s ease;
+        }
+
+        .btn-nav:hover {
+            background: #fff;
+            color: #0e3d6b;
+            border-color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
+        }
+
+        .btn-nav.active {
+            background: rgba(176, 225, 241, .25);
+            border-color: #B0E1F1;
+            color: #B0E1F1;
+        }
+
+        .btn-nav i {
+            font-size: 1.1rem;
+        }
+
+        .hero-banner {
+            background: linear-gradient(135deg, #0e3d6b 0%, #135497 100%);
+            padding: 28px 20px 22px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        .hero-banner h1 {
+            font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .hero-banner p {
+            color: #B0E1F1;
+            font-size: 1rem;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .card-info {
+            background: rgba(14, 61, 107, .55);
+            border: 1px solid rgba(176, 225, 241, .2);
+            border-radius: 14px;
+            padding: 22px;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
+        }
+
+        .card-info h3 {
+            color: #47BCDF;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-info p {
+            color: #e0f2fe;
+            line-height: 1.5;
+            font-size: .95rem;
+            margin-bottom: 14px;
+        }
+
+        .lista-niveles {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 16px 0;
+        }
+
+        .lista-niveles li {
+            background: rgba(11, 42, 74, .65);
+            border-left: 3px solid #47BCDF;
+            border-radius: 0 8px 8px 0;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            font-size: .9rem;
+            color: #cfe8f7;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .lista-niveles li strong {
+            color: #B0E1F1;
+            min-width: 140px;
+        }
+
+        .caja-desempate {
+            background: rgba(11, 42, 74, .8);
+            border: 1px dashed rgba(176, 225, 241, .4);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: .9rem;
+            color: #B0E1F1;
+        }
+
+        .tabla-especificidad {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .fila-nivel {
+            display: flex;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, .25);
+            transition: transform .2s ease;
+            min-height: 64px;
+        }
+
+        .fila-nivel:hover {
+            transform: scale(1.015);
+        }
+
+        .col-nombre {
+            flex: 1.1;
+            background-color: #0c243e;
+            padding: 14px 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+            text-align: right;
+            border-right: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        .col-valor {
+            flex: 1.1;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: clamp(1.1rem, 2vw, 1.45rem);
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #ffffff;
+        }
+
+        .texto-principal {
+            font-size: clamp(1rem, 1.8vw, 1.35rem);
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .texto-sub {
+            font-size: .78rem;
+            opacity: .8;
+            margin-top: 2px;
+        }
+
+        .fila-important .col-nombre {
+            color: #ffffff;
+        }
+
+        .fila-important .col-valor {
+            background-color: #135497;
+        }
+
+        .fila-id .col-nombre {
+            color: #83B0C6;
+        }
+
+        .fila-id .col-valor {
+            background-color: #1a6aaa;
+        }
+
+        .fila-inline .col-nombre {
+            color: #83B0C6;
+        }
+
+        .fila-inline .col-valor {
+            background-color: #2278b8;
+        }
+
+        .fila-clases .col-nombre {
+            color: #47BCDF;
+        }
+
+        .fila-clases .col-valor {
+            background-color: #2F87B5;
+        }
+
+        .fila-elementos .col-nombre {
+            color: #47BCDF;
+        }
+
+        .fila-elementos .col-valor {
+            background-color: #47BCDF;
+            color: #0b2a4a;
+        }
+
+        .fila-universal .col-nombre {
+            color: #B0E1F1;
+        }
+
+        .fila-universal .col-valor {
+            background-color: #2278b8;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <nav class="nav-bar">
+
+        <a class="btn-nav" href="index.html#estructura">
+            <span>Estructura y sintaxis</span>
+            <i class="bi bi-code-slash"></i>
+        </a>
+
+        <a class="btn-nav active" href="especificidad.html">
+            <span>Niveles de especificidad</span>
+            <i class="bi bi-layers"></i>
+        </a>
+
+        <a class="btn-nav" href="pseudoclase.html">
+            <span>Pseudo Clases y Pseudo Elementos</span>
+            <i class="bi bi-cursor"></i>
+        </a>
+
+        <a class="btn-nav" href="index.html#boxmodel">
+            <span>Modelo de caja</span>
+            <i class="bi bi-bounding-box"></i>
+        </a>
+
+        <a class="btn-nav" href="index.html">
+            <i class="bi bi-arrow-left-circle"></i>
+            <span>Volver al Index</span>
+        </a>
+
+    </nav>
+
+    <header class="hero-banner">
+        <h1><i class="bi bi-layers me-2"></i>Niveles de Especificidad CSS</h1>
+        <p>¿Qué regla gana en CSS? El navegador compara los pesos de cada selector de izquierda a derecha.</p>
+    </header>
+
+    <main class="container-fluid px-3 px-lg-5 py-4">
+
+        <div class="row g-4 align-items-center">
+
+            <div class="col-12 col-lg-6">
+
+                <div class="card-info">
+
+                    <h3><i class="bi bi-journal-check"></i>¿Cómo funciona?</h3>
+
+                    <p>
+                        La <strong>especificidad</strong> es el peso que tiene cada regla en CSS. Si dos reglas apuntan al mismo elemento, se aplica la que tenga mayor puntuación según esta jerarquía:
+                    </p>
+
+                    <ul class="lista-niveles">
+                        <li>
+                            <i class="bi bi-1-circle-fill text-warning"></i>
+                            <strong>!important</strong>
+                            <span>Máxima prioridad. Sobrescribe cualquier estilo.</span>
+                        </li>
+                        <li>
+                            <i class="bi bi-2-circle-fill text-info"></i>
+                            <strong>#ID</strong>
+                            <span>Identificador único (<code>#header</code>). Gran peso.</span>
+                        </li>
+                        <li>
+                            <i class="bi bi-3-circle-fill text-primary"></i>
+                            <strong>Estilos en línea</strong>
+                            <span>Declarados en el HTML con <code>style=""</code>.</span>
+                        </li>
+                        <li>
+                            <i class="bi bi-4-circle-fill text-info"></i>
+                            <strong>.Clases / Pseudo</strong>
+                            <span>Clases (<code>.btn</code>), pseudoclases y atributos.</span>
+                        </li>
+                        <li>
+                            <i class="bi bi-5-circle-fill text-info"></i>
+                            <strong>&lt;Elementos/&gt;</strong>
+                            <span>Etiquetas (<code>p</code>, <code>div</code>) y pseudoelementos.</span>
+                        </li>
+                        <li>
+                            <i class="bi bi-0-circle-fill text-light"></i>
+                            <strong>*Universal</strong>
+                            <span>Comodín <code>*</code>. No aporta puntos (0).</span>
+                        </li>
+                    </ul>
+
+                    <div class="caja-desempate">
+                        <i class="bi bi-info-circle-fill me-1"></i>
+                        <strong>Desempate:</strong> Si dos selectores tienen el mismo puntaje, gana la regla que esté <strong>más abajo</strong> en el código CSS (regla de la cascada).
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-12 col-lg-6">
+
+                <div class="card-info p-3 p-sm-4">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3 px-1">
+                        <h5 class="mb-0 fw-bold" style="color: #B0E1F1;">
+                            <i class="bi bi-bar-chart-steps me-2"></i>Tabla de Pesos
+                        </h5>
+                        <span class="badge bg-primary px-3 py-1 rounded-pill">Jerarquía</span>
+                    </div>
+
+                    <div class="tabla-especificidad">
+
+                        <div class="fila-nivel fila-important">
+                            <div class="col-nombre">
+                                <div class="texto-principal">!important</div>
+                            </div>
+                            <div class="col-valor">
+                                1 , 0 , 0 , 0 , 0
+                            </div>
+                        </div>
+
+                        <div class="fila-nivel fila-id">
+                            <div class="col-nombre">
+                                <div class="texto-principal">#ID</div>
+                            </div>
+                            <div class="col-valor">
+                                0 , 1 , 0 , 0 , 0
+                            </div>
+                        </div>
+
+                        <div class="fila-nivel fila-inline">
+                            <div class="col-nombre">
+                                <div class="texto-principal">Estilos en línea</div>
+                            </div>
+                            <div class="col-valor">
+                                0 , 0 , 1 , 0 , 0
+                            </div>
+                        </div>
+
+                        <div class="fila-nivel fila-clases">
+                            <div class="col-nombre">
+                                <div class="texto-principal">.Clases</div>
+                                <div class="texto-sub">(pseudoclases o atributos)</div>
+                            </div>
+                            <div class="col-valor">
+                                0 , 0 , 0 , 1 , 0
+                            </div>
+                        </div>
+
+                        <div class="fila-nivel fila-elementos">
+                            <div class="col-nombre">
+                                <div class="texto-principal">&lt;Elementos/&gt;</div>
+                                <div class="texto-sub">(o pseudo elementos)</div>
+                            </div>
+                            <div class="col-valor">
+                                0 , 0 , 0 , 0 , 1
+                            </div>
+                        </div>
+
+                        <div class="fila-nivel fila-universal">
+                            <div class="col-nombre">
+                                <div class="texto-principal">*Selector Universal</div>
+                            </div>
+                            <div class="col-valor">
+                                0 , 0 , 0 , 0 , 0
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
